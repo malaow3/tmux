@@ -7,6 +7,7 @@ export LC_ALL=en_US.UTF-8
 fahrenheit=$1
 location=$2
 fixedlocation=$3
+addweatherspace=$4
 
 DATAFILE=/tmp/.dracula-tmux-data
 LAST_EXEC_FILE="/tmp/.dracula-tmux-weather-last-exec"
@@ -20,7 +21,7 @@ main()
 
   if [ "$(expr ${TIME_LAST} + ${RUN_EACH})" -lt "${TIME_NOW}" ]; then
     # Run weather script here
-    $current_dir/weather.sh $fahrenheit $location "$fixedlocation" > "${DATAFILE}"
+    $current_dir/weather.sh $fahrenheit $location "$fixedlocation" $addweatherspace > "${DATAFILE}"
     echo "${TIME_NOW}" > "${LAST_EXEC_FILE}"
   fi
 

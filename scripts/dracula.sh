@@ -8,6 +8,7 @@ source $current_dir/utils.sh
 main()
 {
   # set configuration option variables
+  add_weather_space=$(get_tmux_option "@dracula-add-weather-space" false)
   show_kubernetes_context_label=$(get_tmux_option "@dracula-kubernetes-context-label" "")
   show_only_kubernetes_context=$(get_tmux_option "@dracula-show-only-kubernetes-context" "")
   eks_hide_arn=$(get_tmux_option "@dracula-kubernetes-eks-hide-arn" false)
@@ -259,7 +260,7 @@ main()
 
     elif [ $plugin = "weather" ]; then
       IFS=' ' read -r -a colors <<< $(get_tmux_option "@dracula-weather-colors" "orange dark_gray")
-      script="#($current_dir/weather_wrapper.sh $show_fahrenheit $show_location '$fixed_location')"
+      script="#($current_dir/weather_wrapper.sh $show_fahrenheit $show_location '$fixed_location' $add_weather_space)"
 
     elif [ $plugin = "time" ]; then
       IFS=' ' read -r -a colors <<< $(get_tmux_option "@dracula-time-colors" "dark_purple white")

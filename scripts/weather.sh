@@ -3,24 +3,39 @@
 export LC_ALL=en_US.UTF-8
 
 fahrenheit=$1
-location=$2
+show_location=$2
 fixedlocation=$3
+addweatherspace=$4
 
-# emulate timeout command from bash - timeout is not available by default on OSX
-if [ "$(uname)" == "Darwin" ]; then
-  timeout() {
-      perl -e 'alarm shift; exec @ARGV' "$duration" "$@"
-  }
+# Base URL of the weather API
+BASE_API_URL="https://api.merrysky.net/weather"
+
+# Check if jq is installed
+if ! command -v jq &> /dev/null; then
+    echo "jq is not installed. Please install it to parse JSON."
+    exit 1
 fi
+
+# Check if curl is installed
+if ! command -v curl &> /dev/null; then
+    echo "curl is not installed. Please install it to fetch data from the API."
+    exit 1
+fi
+
+construct_api_url() {
+    if [[ ! -z "$fixedlocation" ]]; then
+        echo "${BASE_API_URL}?q=${fixedlocation// /%20}&source=pirateweather"
+    else
+        echo "${BASE_API_URL}?source=pirateweather"
+    fi
+}
 
 display_location()
 {
-  if $location && [[ ! -z "$fixedlocation" ]]; then
-    echo " $fixedlocation"
-  elif $location; then
-    city=$(curl -s https://ipinfo.io/city 2> /dev/null)
-    region=$(curl -s https://ipinfo.io/region 2> /dev/null)
-    echo " $city, $region"
+  if $show_location && [[ ! -z "$fixedlocation" ]]; then
+    echo "$fixedlocation"
+  elif $show_location; then
+    echo "$(curl -s "$(construct_api_url)" | jq -r '.merry.location.name')"
   else
     echo ''
   fi
@@ -28,56 +43,64 @@ display_location()
 
 fetch_weather_information()
 {
-  display_weather=$1
-  # it gets the weather condition textual name (%C), and the temperature (%t)
-  api_response=$(curl -sL wttr.in/${fixedlocation// /%20}\?format="%C+%t$display_weather")
-
-  if [[ $api_response = "Unknown location;"* ]]; then
-    echo "Unknown location error"
-  else
-    echo $api_response
-  fi
+  curl -s "$(construct_api_url)"
 }
 
-#get weather display
 display_weather()
 {
+  weather_information=$(fetch_weather_information)
+
+  # Extract current temperature and weather condition
   if $fahrenheit; then
-    display_weather='&u' # for USA system
+    temperature=$(echo "$weather_information" | jq -r '(.currently.temperature * 9/5 + 32) | round | tostring + "°F"')
   else
-    display_weather='&m' # for metric system
+    temperature=$(echo "$weather_information" | jq -r '.currently.temperature | round | tostring + "°C"')
   fi
-  weather_information=$(fetch_weather_information $display_weather)
 
-  weather_condition=$(echo $weather_information | rev | cut -d ' ' -f2- | rev) # Sunny, Snow, etc
-  temperature=$(echo $weather_information | rev | cut -d ' ' -f 1 | rev) # +31°C, -3°F, etc
-  unicode=$(forecast_unicode $weather_condition)
+  weather_condition=$(echo "$weather_information" | jq -r '.currently.summary')
+  unicode=$(forecast_unicode "$weather_condition")
 
-  echo "$unicode ${temperature/+/}" # remove the plus sign to the temperature
+  echo "$unicode $temperature"
 }
 
 forecast_unicode()
 {
-  weather_condition=$(echo $weather_condition | awk '{print tolower($0)}')
+  weather_condition=$(echo "$1" | awk '{print tolower($0)}')
 
   if [[ $weather_condition =~ 'snow' ]]; then
-    echo '❄ '
+    if [[ $addweatherspace == "true" ]]; then
+      echo '❄ '
+    else
+      echo '❄'
+    fi
   elif [[ (($weather_condition =~ 'rain') || ($weather_condition =~ 'shower')) ]]; then
-    echo '☂ '
+    if [[ $addweatherspace == "true" ]]; then
+      echo '☂ '
+    else
+      echo '☂'
+    fi
   elif [[ (($weather_condition =~ 'overcast') || ($weather_condition =~ 'cloud')) ]]; then
-    echo '☁ '
+    if [[ $addweatherspace == "true" ]]; then
+      echo '☁ '
+    else
+      echo '☁'
+    fi
   elif [[ $weather_condition = 'NA' ]]; then
     echo ''
   else
-    echo '☀ '
+    if [[ $addweatherspace == "true" ]]; then
+      echo '☀ '
+    else
+      echo '☀'
+    fi
   fi
 }
 
 main()
 {
-  # process should be cancelled when session is killed
-  if timeout 1 bash -c "</dev/tcp/ipinfo.io/443" && timeout 1 bash -c "</dev/tcp/wttr.in/443"; then
-    echo "$(display_weather)$(display_location)"
+  API_URL=$(construct_api_url)
+  if echo "$weather_data" | jq empty > /dev/null 2>&1; then
+    echo "$(display_weather) $(display_location)"
   else
     echo "Weather Unavailable"
   fi
