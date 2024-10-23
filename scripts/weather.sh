@@ -41,6 +41,21 @@ display_location()
   fi
 }
 
+get_current_conditions() {
+    local weather_data="$1"
+
+    # First check if current temperature is valid (not -999)
+    local current_temp=$(echo "$weather_data" | jq '.currently.temperature')
+
+    if [[ "$current_temp" == "-999" || "$current_temp" == "null" ]]; then
+        # If current conditions are invalid, get the most recent hourly forecast
+        echo "$weather_data" | jq '.hourly.data[0]'
+    else
+        # Otherwise use current conditions
+        echo "$weather_data" | jq '.currently'
+    fi
+}
+
 fetch_weather_information()
 {
   curl -s "$(construct_api_url)"
@@ -48,14 +63,16 @@ fetch_weather_information()
 
 display_weather()
 {
-  weather_information=$(fetch_weather_information)
 
+  weather_information=$(fetch_weather_information)
+  current_conditions=$(get_current_conditions "$weather_information")
   # Extract current temperature and weather condition
-  if $fahrenheit; then
-    temperature=$(echo "$weather_information" | jq -r '(.currently.temperature * 9/5 + 32) | round | tostring + "°F"')
-  else
-    temperature=$(echo "$weather_information" | jq -r '.currently.temperature | round | tostring + "°C"')
-  fi
+   if $fahrenheit; then
+        temperature=$(echo "$current_conditions" | jq -r '(.temperature * 9/5 + 32) | round | tostring + "°F"')
+   else
+        temperature=$(echo "$current_conditions" | jq -r '.temperature | round | tostring + "°C"')
+   fi
+
 
   weather_condition=$(echo "$weather_information" | jq -r '.currently.summary')
   unicode=$(forecast_unicode "$weather_condition")
