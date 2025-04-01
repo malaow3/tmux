@@ -57,7 +57,7 @@ main()
   gray=$(get_tmux_option "@dracula-color-gray" "#44475a")
   dark_gray=$(get_tmux_option "@dracula-color-dark_gray" "#22212C")  # background
   light_purple=$(get_tmux_option "@dracula-color-light_purple" "#CDC1FF")  # cursor_bg, cursor_border, active_tab bg
-  dark_purple=$(get_tmux_option "@dracula-color-dark_purple" "#5E4B6E")
+  dark_purple=$(get_tmux_option "@dracula-color-dark_purple" "#8f75ff")
   cyan=$(get_tmux_option "@dracula-color-cyan" "#61ABDA")  # bright cyan
   green=$(get_tmux_option "@dracula-color-green" "#00FFAA")  # compose_cursor, bright green
   orange=$(get_tmux_option "@dracula-color-orange" "#D6C5A5")  # yellow, bright yellow
