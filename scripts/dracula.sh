@@ -40,17 +40,30 @@ main()
   show_empty_plugins=$(get_tmux_option "@dracula-show-empty-plugins" true)
 
   # Dracula Color Pallette
-  white=$(get_tmux_option "@dracula-color-white" "#f8f8f2")
-  gray=$(get_tmux_option "@dracula-color-gray" "#44475a")
-  dark_gray=$(get_tmux_option "@dracula-color-dark_gray" "#282a36")
-  light_purple=$(get_tmux_option "@dracula-color-light_purple" "#bd93f9")
-  dark_purple=$(get_tmux_option "@dracula-color-dark_purple" "#6272a4")
-  cyan=$(get_tmux_option "@dracula-color-cyan" "#8be9fd")
-  green=$(get_tmux_option "@dracula-color-green" "#50fa7b")
-  orange=$(get_tmux_option "@dracula-color-orange" "#ffb86c")
-  red=$(get_tmux_option "@dracula-color-red" "#ff5555")
-  pink=$(get_tmux_option "@dracula-color-pink" "#ff79c6")
-  yellow=$(get_tmux_option "@dracula-color-yellow" "#f1fa8c")
+  # white=$(get_tmux_option "@dracula-color-white" "#f8f8f2")
+  # gray=$(get_tmux_option "@dracula-color-gray" "#44475a")
+  # dark_gray=$(get_tmux_option "@dracula-color-dark_gray" "#282a36")
+  # light_purple=$(get_tmux_option "@dracula-color-light_purple" "#bd93f9")
+  # dark_purple=$(get_tmux_option "@dracula-color-dark_purple" "#6272a4")
+  # cyan=$(get_tmux_option "@dracula-color-cyan" "#8be9fd")
+  # green=$(get_tmux_option "@dracula-color-green" "#50fa7b")
+  # orange=$(get_tmux_option "@dracula-color-orange" "#ffb86c")
+  # red=$(get_tmux_option "@dracula-color-red" "#ff5555")
+  # pink=$(get_tmux_option "@dracula-color-pink" "#ff79c6")
+  # yellow=$(get_tmux_option "@dracula-color-yellow" "#f1fa8c")
+  #
+  # Custom Color Palette
+  white=$(get_tmux_option "@dracula-color-white" "#DDDDDD")  # foreground
+  gray=$(get_tmux_option "@dracula-color-gray" "#898989")    # scrollbar_thumb, split
+  dark_gray=$(get_tmux_option "@dracula-color-dark_gray" "#22212C")  # background
+  light_purple=$(get_tmux_option "@dracula-color-light_purple" "#CDC1FF")  # cursor_bg, cursor_border, active_tab bg
+  dark_purple=$(get_tmux_option "@dracula-color-dark_purple" "#403833")  # bright black
+  cyan=$(get_tmux_option "@dracula-color-cyan" "#61ABDA")  # bright cyan
+  green=$(get_tmux_option "@dracula-color-green" "#00FFAA")  # compose_cursor, bright green
+  orange=$(get_tmux_option "@dracula-color-orange" "#D6C5A5")  # yellow, bright yellow
+  red=$(get_tmux_option "@dracula-color-red" "#EC8FB0")  # red, selection_bg, new_tab_hover bg
+  pink=$(get_tmux_option "@dracula-color-pink" "#CF86C1")  # bright magenta
+  yellow=$(get_tmux_option "@dracula-color-yellow" "#D6C5A5")  # yellow, bright yellow
 
   # Set transparency variables - Colors and window dividers
   if $transparent_powerline_bg; then
