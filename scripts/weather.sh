@@ -32,9 +32,9 @@ construct_api_url() {
 
 display_location()
 {
-  if $show_location && [[ ! -z "$fixedlocation" ]]; then
+  if [[ "$show_location" == "true" && ! -z "$fixedlocation" ]]; then
     echo "$fixedlocation"
-  elif $show_location; then
+  elif [[ "$show_location" == "true" ]]; then
     echo "$(curl -s "$(construct_api_url)" | jq -r '.merry.location.name')"
   else
     echo ''
@@ -43,15 +43,19 @@ display_location()
 
 get_current_conditions() {
     local weather_data="$1"
-
-    # First check if current temperature is valid (not -999)
     local current_temp=$(echo "$weather_data" | jq '.currently.temperature')
 
     if [[ "$current_temp" == "-999" || "$current_temp" == "null" ]]; then
-        # If current conditions are invalid, get the most recent hourly forecast
-        echo "$weather_data" | jq '.hourly.data[0]'
+        # Get current unix time
+        local current_time=$(date +%s)
+
+        # Find the hourly forecast closest to current time
+        echo "$weather_data" | jq --argjson now "$current_time" '
+            .hourly.data
+            | map(. + {diff: ( ($now - .time) | abs )})
+            | sort_by(.diff)
+            | .[0]'
     else
-        # Otherwise use current conditions
         echo "$weather_data" | jq '.currently'
     fi
 }
