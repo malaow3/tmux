@@ -43,21 +43,21 @@ display_location()
 
 get_current_conditions() {
     local weather_data="$1"
-    local current_temp=$(echo "$weather_data" | jq '.currently.temperature')
+    # local current_temp=$(echo "$weather_data" | jq '.currently.temperature')
 
-    if [[ "$current_temp" == "-999" || "$current_temp" == "null" ]]; then
-        # Get current unix time
-        local current_time=$(date +%s)
+    # if [[ "$current_temp" == "-999" || "$current_temp" == "null" ]]; then
+    # Get current unix time
+    local current_time=$(date +%s)
 
-        # Find the hourly forecast closest to current time
-        echo "$weather_data" | jq --argjson now "$current_time" '
-            .hourly.data
-            | map(. + {diff: ( ($now - .time) | abs )})
-            | sort_by(.diff)
-            | .[0]'
-    else
-        echo "$weather_data" | jq '.currently'
-    fi
+    # Find the hourly forecast closest to current time
+    echo "$weather_data" | jq --argjson now "$current_time" '
+        .hourly.data
+        | map(. + {diff: ( ($now - .time) | abs )})
+        | sort_by(.diff)
+        | .[0]'
+    # else
+    #     echo "$weather_data" | jq '.currently'
+    # fi
 }
 
 fetch_weather_information()
