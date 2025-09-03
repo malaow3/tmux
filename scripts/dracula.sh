@@ -144,7 +144,7 @@ main()
   if $show_border_contrast; then
     tmux set-option -g pane-active-border-style "fg=${light_purple}"
   else
-    tmux set-option -g pane-active-border-style "fg=${dark_purple}"
+    tmux set-option -g pane-active-border-style "fg=${light_purple}"
   fi
   tmux set-option -g pane-border-style "fg=${gray}"
 
@@ -276,7 +276,7 @@ main()
       script="#($current_dir/weather_wrapper.sh $show_fahrenheit $show_location '$fixed_location' $add_weather_space)"
 
     elif [ $plugin = "time" ]; then
-      IFS=' ' read -r -a colors <<< $(get_tmux_option "@dracula-time-colors" "dark_purple white")
+      IFS=' ' read -r -a colors <<< $(get_tmux_option "@dracula-time-colors" "dark_purple dark_gray")
       if [ -n "$time_format" ]; then
         script=${time_format}
       else
@@ -315,7 +315,11 @@ main()
       powerbg=${!colors[0]}
     else
       if $show_empty_plugins; then
-        tmux set-option -ga status-right "#[fg=${!colors[1]},bg=${!colors[0]}] $script "
+        if [ $plugin = "weather" ]; then
+          tmux set-option -ga status-right "#[fg=${!colors[1]},bg=${!colors[0]}] $script"
+        else
+          tmux set-option -ga status-right "#[fg=${!colors[1]},bg=${!colors[0]}] $script "
+        fi
       else
         tmux set-option -ga status-right "#{?#{==:$script,},,#[fg=${!colors[1]},bg=${!colors[0]}] $script }"
       fi
@@ -326,7 +330,7 @@ main()
   if $show_powerline; then
     tmux set-window-option -g window-status-current-format "#[fg=${window_sep_fg},bg=${window_sep_bg}]${window_sep}#[fg=${white},bg=${dark_purple}] #I #W${current_flags} #[fg=${dark_purple},bg=${bg_color}]${left_sep}"
   else
-    tmux set-window-option -g window-status-current-format "#[fg=${white},bg=${dark_purple}] #I #W${current_flags} "
+    tmux set-window-option -g window-status-current-format "#[fg=${},bg=${light_purple}] #I #W${current_flags} "
   fi
 
   tmux set-window-option -g window-status-format "#[fg=${white}]#[bg=${bg_color}] #I #W${flags}"
