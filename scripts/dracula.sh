@@ -276,7 +276,7 @@ main()
       script="#($current_dir/weather_wrapper.sh $show_fahrenheit $show_location '$fixed_location' $add_weather_space)"
 
     elif [ $plugin = "time" ]; then
-      IFS=' ' read -r -a colors <<< $(get_tmux_option "@dracula-time-colors" "dark_purple dark_gray")
+      IFS=' ' read -r -a colors <<< $(get_tmux_option "@dracula-time-colors" "light_purple dark_gray")
       if [ -n "$time_format" ]; then
         script=${time_format}
       else
